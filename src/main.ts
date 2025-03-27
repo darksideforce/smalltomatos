@@ -5,11 +5,13 @@ import App from './App.vue'
 import './style.css'
 
 import './demos/ipc'
+import { setupStore } from './store';
 
+const app = createApp(App);
 
-createApp(App)
-  .use(router)
+app.use(router)
   .mount('#app')
   .$nextTick(() => {
     postMessage({ payload: 'removeLoading' }, '*')
   })
+setupStore(app)

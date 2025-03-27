@@ -1,7 +1,6 @@
 <template>
   <div class="container" ref="container">
-    <div class="slider-track" ref="track" @mousedown="handleMouseDown" @mousemove="handleMouseMove"
-      @mouseout="handleMouseUp" @mouseup="handleMouseUp" @mouseleave="handleMouseUp" :style="wrapperStyle">
+    <div class="slider-track" ref="track" @mousedown="handleMouseDown" :style="wrapperStyle">
       <router-view v-slot="{ Component }">
         <transition :name="transitionName">
           <keep-alive>
@@ -60,11 +59,22 @@ const initContainerSize = () => {
   sideWidth.y = container.value.offsetHeight
 }
 const handleMouseDown: DragEventFunc<MouseEvent> = (e) => {
+  e.preventDefault();
+  document.addEventListener('mousemove', handleMouseMove)
+  document.addEventListener('mouseup', handleDragEnd)
+  document.addEventListener('mouseleave', handleDragEnd)
   DragStart(e.clientX, e.clientY)
 }
-const handleMouseUp: DragEventFunc<MouseEvent> = (e) => {
+const handleDragEnd = () => {
+  console.log(`触发清除事件`)
+  document.removeEventListener('mousemove', handleMouseMove)
+  document.removeEventListener('mouseup', handleDragEnd)
+  document.removeEventListener('mouseleave', handleDragEnd)
   DragEnd()
 }
+// const handleMouseUp: DragEventFunc<MouseEvent> = (e) => {
+//   DragEnd()
+// }
 const handleMouseMove: DragEventFunc<MouseEvent> = (e) => {
   DragUpdate(e.clientX, e.clientY)
 }
@@ -170,7 +180,6 @@ onMounted(() => {
 .slide-down-leave-to {
   transform: translateY(100%);
 }
-
 .container {
   flex: 1;
   display: flex;
@@ -180,14 +189,11 @@ onMounted(() => {
   position: relative;
 
   .slider-track {
-    // width: 400px;;
-    // height: 400px;
     width: 100vw;
     height: 100vh;
     display: flex;
     justify-content: center;
     position: relative;
-
     align-items: center;
   }
 
