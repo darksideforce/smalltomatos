@@ -25,6 +25,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/matter-js": "^0.19.8",
     "@vitejs/plugin-vue": "^5.0.4",
     "electron": "^29.1.1",
     "electron-builder": "^24.13.3",
@@ -38,6 +39,7 @@
   "dependencies": {
     "dayjs": "^1.11.13",
     "less-loader": "^12.2.0",
+    "matter-js": "^0.20.0",
     "pinia": "^3.0.1",
     "vue-router": "^4.5.0"
   }

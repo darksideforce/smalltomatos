@@ -1,17 +1,17 @@
 <template>
-  <div class="week-column-wrapper" @click="handleclick">
-    <div class="week-column-wrapper-title">
-      <span class="week-column-wrapper-title-small">
+  <div class="week-column" >
+    <div class="week-column_title">
+      <span class="week-column_title--small">
         {{ basicDay.week }}
       </span>
-      <span class="week-column-wrapper-title-big">
+      <span class="week-column_title--big">
         {{ basicDay.day }}
       </span>
     </div>
-    <div class="week-column-wrapper-content">
-      <div class="week-column-wrapper-content-item" v-for="item in timeSetting.itemStep"></div>
+    <div class="week-column_content">
+      <div class="week-column_content--item" v-for="item in timeSetting.itemStep"></div>
     </div>
-    <div class="week-column-wrapper-mask">
+    <div class="week-column_mask">
       <CalendarMissionMask v-for="item in maskArray" :height="item.height" :top="item.top" />
     </div>
   </div>
@@ -32,9 +32,6 @@ interface WeekProps {
 }
 const props = defineProps<WeekProps>()
 const maskArray = ref<missionMaskType[]>([])
-const handleclick = () => {
-  console.log(maskArray)
-}
 
 watch(() => props.basicData, (newvalue, oldvalue) => {
   arrayOperat(newvalue)
@@ -48,43 +45,29 @@ const arrayOperat = (newvalue:dataBaseType)=>{
     const array = props.basicData.mission.map((e: basicMissionAtom) => {
       return {
         height: (timeDiffCalc(e.start, e.end) * timeRatio) ,
-        top: startTimeDiff(e.start) * timeRatio 
+        top: timeDiffCalc( props.basicDay.date + 'T' + '8:00',e.start) * timeRatio 
       }
     })
     maskArray.value = array 
-    console.log(maskArray)
   }
 }
-const startTimeDiff = (end: string) => {
-  const start = props.basicDay.date + 'T' + '8:00'
-  const diff = timeDiffCalc(start, end)
-  return diff
-}
+
 const timeDiffCalc = (start: string, end: string) => {
   const startTime = dayjs(start, 'HH:mm');
   const endTime = dayjs(end, 'HH:mm');
   const diff = endTime.diff(startTime, 'minute')
   return diff
 }
-const borderPx = (start:string,end:string)=>{
-  const  startTime= dayjs(start).hour();
-  const endTime = dayjs(end).hour();
-  return (endTime-startTime)
-}
-const topBorderPx = (end:string)=>{
-  const start = props.basicDay.date + 'T' + '8:00'
-  return  dayjs(end).hour() - dayjs(start).hour() 
-}
 
 </script>
 <style scoped lang='less'>
-.week-column-wrapper {
+.week-column{
   flex: 1;
   min-height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
-  &-title {
+  &_title {
     min-height: 40px;
     display: flex;
     flex-direction: column;
@@ -94,26 +77,26 @@ const topBorderPx = (end:string)=>{
     border-radius: 12px;
     margin: 0px 2px 4px 2px;
 
-    &-small {
+    &--small {
       font-size: 11px;
     }
 
-    &-big {
+    &--big {
       font-size: 16px;
       font-weight: bold;
     }
   }
 
-  &-content {
+  &_content {
     flex: 1;
     width: 100%;
-    &-item {
+    &--item {
       min-height: 60px;
       box-sizing: border-box;
       border-bottom: 1px dashed grey;
     }
   }
-  &-mask{
+  &_mask{
     position: absolute;
     width: 100%;
     min-height: 100%;
