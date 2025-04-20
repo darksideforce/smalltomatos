@@ -66,16 +66,13 @@ const handleMouseDown: DragEventFunc<MouseEvent> = (e) => {
   DragStart(e.clientX, e.clientY)
 }
 const handleDragEnd = () => {
-  console.log(`触发清除事件`)
   document.removeEventListener('mousemove', handleMouseMove)
   document.removeEventListener('mouseup', handleDragEnd)
   document.removeEventListener('mouseleave', handleDragEnd)
   DragEnd()
 }
-// const handleMouseUp: DragEventFunc<MouseEvent> = (e) => {
-//   DragEnd()
-// }
 const handleMouseMove: DragEventFunc<MouseEvent> = (e) => {
+  console.log(`spring dragEvent`)
   DragUpdate(e.clientX, e.clientY)
 }
 const DragStart = (clientX: number, clientY: number) => {

@@ -13,12 +13,20 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue';
 import useAnimateHooks from './hooks/useAnimate';
+import useMyDialog from './hooks/useNewDialog';
 
 const animate = ref<HTMLElement | null>(null)
 const {registerContainer,renderImg} = useAnimateHooks()
+const { openDialog } = useMyDialog()
+const showDialog = () => {
+  openDialog({
+  });
+};
 const handleclick = ()=>{
-  registerContainer(animate.value)
+  showDialog()
 }
+
+
 onMounted(async ()=>{
   await nextTick()
   setTimeout(() => {

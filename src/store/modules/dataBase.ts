@@ -5,21 +5,16 @@ import { store } from "..";
 import { mockData } from "@/mock/mock-1";
 import { isEmpty } from "@/utils/tool";
 
+
 export const useDataBase = defineStore('dataBase', {
     state: (): dataBaseState => ({
         missionData: [],
-
+        missionTimeSetting:20,
     }),
     actions: {
         changeMissionData(){
             this.sameDayArrayCollect(mockData)
         },
-        // changeMissionData(data: dataBaseType[]) {
-        //     console.log(data)
-        //     if(!isEmpty(data)){
-        //         this.missionData = data
-        //     }
-        // },
         //将同一天的数据统一
         sameDayArrayCollect(data?: dataBaseType[]) {
             if (!isEmpty(data)) {
@@ -37,7 +32,17 @@ export const useDataBase = defineStore('dataBase', {
                 })
                 this.missionData = Array.from(dataMap.values())
             }
-        }
+        },
+        loadSetting(){
+
+        },
+        changeMissionTime(time:number){
+            // ipcRenderer.invoke('search-setting', 'time')
+            window.ipcRenderer.invoke('set-setting', 'time',time)
+            console.log(`time=${time}`)
+            this.missionTimeSetting = time
+        },
+
     }
 })
 export function usedataBaseHook() {

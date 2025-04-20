@@ -3,6 +3,7 @@ import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import os from 'node:os'
+import { StoreManager } from '../services/filestorage'
 
 const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -117,4 +118,13 @@ ipcMain.handle('open-win', (_, arg) => {
   } else {
     childWindow.loadFile(indexHtml, { hash: arg })
   }
+})
+const store = new StoreManager()
+ipcMain.handle('search-setting', async (_, key) => {
+  console.log(`ipc console`)
+  return store.get(key)
+})
+ipcMain.handle('set-setting', async (_, key,value) => {
+  console.log(`ipc set,${key},${value}`)
+  return store.set(key,value)
 })

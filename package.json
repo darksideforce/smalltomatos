@@ -25,6 +25,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/electron-store": "^3.2.2",
     "@types/matter-js": "^0.19.8",
     "@vitejs/plugin-vue": "^5.0.4",
     "electron": "^29.1.1",
@@ -33,11 +34,15 @@
     "vite": "^5.1.5",
     "vite-plugin-electron": "^0.28.4",
     "vite-plugin-electron-renderer": "^0.14.5",
+    "vite-plugin-svg-icons": "^2.0.1",
     "vue": "^3.4.21",
     "vue-tsc": "^2.0.6"
   },
   "dependencies": {
+    "animejs": "^4.0.1",
     "dayjs": "^1.11.13",
+    "electron-store": "^10.0.1",
+    "fast-glob": "^3.3.3",
     "less-loader": "^12.2.0",
     "matter-js": "^0.20.0",
     "pinia": "^3.0.1",

@@ -1,7 +1,7 @@
 import { onBeforeUnmount, onMounted, ref } from "vue"
-import Matter, { Engine, Render, Bodies, World, Runner, IEventCollision } from 'matter-js';
+import Matter, { Engine, Render, Bodies, World, Runner,  } from 'matter-js';
 
-const imageurl = new URL('./tomatos.png',import.meta.url)
+const imageurl = new URL('@/assets/img/tomatos.png',import.meta.url)
 const useAnimateHooks = function () {
     const engine = ref<Matter.Engine | null>(null)
     const render = ref<Matter.Render | null>(null)
@@ -9,15 +9,16 @@ const useAnimateHooks = function () {
     const container = ref<HTMLElement | null>(null)
     const timer = ref<NodeJS.Timeout | null>(null)
     const runner = ref<Matter.Runner | null>(null)
+
     const registerContainer = (ele: HTMLElement | null) => {
         container.value = ele
         initEngine()
     }
     const initEngine = () => {
         if (container.value) {
-            console.log(container.value.offsetWidth)
             engine.value = Engine.create()
             runner.value = Runner.create()
+            engine.value.world.gravity.y = 0.5
             render.value = Render.create({
                 element: container.value,
                 engine: engine.value,
@@ -37,15 +38,14 @@ const useAnimateHooks = function () {
             ])
             Render.run(render.value)
             // Engine.run(render.value)
-            renderImg()
+            renderImg(2)
         }
 
     }
     const createTomatoes = (): Matter.Body => {
         const width: number = container.value?.offsetWidth ? container.value.offsetWidth : 20
         const position = Math.random() * width
-        console.log(`postition=${position}`)
-        return Bodies.circle(
+        const body = Bodies.circle(
             position,
             50,
             25,
@@ -61,26 +61,27 @@ const useAnimateHooks = function () {
                 label: 'tomato' // 标记为番茄类型
             }
         );
+        Matter.Body.rotate(body,Math.random() * 2 * Math.PI)
+        return body
     }
-    const renderImg = () => {
+    const renderImg = (count:number) => {
         const image = new Image ()
-
         image.src = imageurl.href
         image.onload=()=>{
-            console.log(`画完`)
             if (!engine.value || !runner.value) return;
-            timer.value = setInterval(() => {
-                if (!engine.value) return;
-                const tomato = createTomatoes();
-                World.add(engine.value.world, tomato);
-                tomatoes.value.push(tomato);
+            for(let i=0;i<count;i++){
+                tomatoes.value.push(createTomatoes())
+            }
+            World.add(engine.value.world,tomatoes.value)
+            // timer.value = setInterval(() => {
+            //     if (!engine.value) return;
+            //     const tomato = createTomatoes();
+            //     World.add(engine.value.world, tomato);
+            //     tomatoes.value.push(tomato);
     
-            }, 500);
+            // }, 500);
             Runner.run(runner.value, engine.value)
         }
-
-
-
     }
     const destoryRuner = () => {
         if (engine.value && render.value) {
@@ -96,7 +97,8 @@ const useAnimateHooks = function () {
     })
     return {
         registerContainer,
-        renderImg
+        renderImg,
+        destoryRuner
     }
 }
 export default useAnimateHooks

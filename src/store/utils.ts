@@ -1,5 +1,6 @@
 import { dataBaseType } from "@/type"
 
 export type dataBaseState = {
-    missionData: dataBaseType[]
+    missionData: dataBaseType[],
+    missionTimeSetting:number
 }
