@@ -29,8 +29,6 @@ import { usedataBaseHook } from '@/store/modules/dataBase';
 import { animate, createSpring, } from 'animejs';
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 
-
-
 const isDraging = ref(false)
 const startPosition = reactive({ x: 0 })
 const startX = ref(0)
@@ -38,6 +36,8 @@ const position = reactive({ x: 0 })
 const transX = ref(0)
 const dragEle = ref(null)
 const rulerEle = ref()
+const standValue = ref(0)
+const {loadSetting ,missionTimeSetting} = usedataBaseHook()
 const getMultiple = function (a: number, b: number) {
     if (a > b) [a, b] = [b, a]
     const start = Math.ceil(a / 5) * 5
@@ -56,64 +56,58 @@ const rulerConfig = reactive({
     maxXleft: 0,
     maxXright: 0,
 })
-const standValue = computed(() => {
-    let realX = 0
-    if (transX.value > 0) {
-        realX = rulerConfig.maxXleft - transX.value
-    }
-    else {
-        realX = rulerConfig.maxXleft + Math.abs(transX.value)
-    }
-    const value = Math.round(realX / rulerConfig.width) * 5
-    return value
-})
-onMounted(async () => {
-    const value =  window.ipcRenderer.invoke('search-setting','time').then(res=>{
-        console.log(res)
-    })
-    console.log(value)
+onMounted(async () => { 
     await nextTick()
     if (rulerEle.value) {
-        console.log(rulerEle.value.clientWidth)
         rulerConfig.maxXleft = (rulerEle.value.clientWidth / 2) - 5
         rulerConfig.maxXright = 0 - (rulerConfig.fullWidth - rulerConfig.maxXleft - 10 - rulerConfig.width)
     }
+    loadSetting()
+    SliderAnimation(missionTimeSetting)
+    standValue.value = missionTimeSetting
+    // window.ipcRenderer.invoke('search-setting','time').then(res=>{
+    //     standValue.value = res
+    //     SliderAnimation(res)
+    // })
+
 })
+
 const handleMouseDown = (e: MouseEvent) => {
     isDraging.value = true
     startX.value = e.clientX
     document.addEventListener('mousemove', handleDrag)
     document.addEventListener('mouseup', handleStopDrag)
 }
+
 const handleDrag = (e: MouseEvent) => {
     if (!isDraging.value) return
     if (!dragEle.value) return
-
     const moveX = e.clientX - startX.value
     position.x = moveX + startPosition.x
     if (position.x > rulerConfig.maxXright && position.x < rulerConfig.maxXleft) {
-        console.log(`111`)
         updateAnimate(position.x)
         transX.value = position.x
     }
 }
+
 const handleStopDrag = () => {
     isDraging.value = false
     startPosition.x = position.x
-    stopSliderAnimation(standValue.value)
+    sliderValueChange()
+    SliderAnimation(standValue.value)
     document.removeEventListener('mousemove', handleDrag)
     document.removeEventListener('mouseup', handleStopDrag)
 }
+
 const updateAnimate = (x: number) => {
     if (!dragEle.value) return
     animate(dragEle.value, {
         translateX: x,
         ease: createSpring({ stiffness: 10, damping: 5 }),
     })
-    // position.x = x + position.x
-    // console.log(`now=${position.x}`)
 }
-const stopSliderAnimation = (x: number) => {
+//滑动到靠近值
+const SliderAnimation = (x: number) => {
     const stopSliderTransX = x / 5 * rulerConfig.width
     let sliderRealX = 0
     if (stopSliderTransX < rulerConfig.maxXleft) {
@@ -124,8 +118,20 @@ const stopSliderAnimation = (x: number) => {
     }
     updateAnimate(sliderRealX)
 }
+
 const handleClickChangeTime = () => {
     usedataBaseHook().changeMissionTime(standValue.value)
+}
+//每次滑动完都动态改变值
+const sliderValueChange = ()=>{
+    let realX = 0
+    if (transX.value > 0) {
+        realX = rulerConfig.maxXleft - transX.value
+    }
+    else {
+        realX = rulerConfig.maxXleft + Math.abs(transX.value)
+    }
+    standValue.value = Math.round(realX / rulerConfig.width) * 5
 }
 </script>
 <style scoped lang='less'>

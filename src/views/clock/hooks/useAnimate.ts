@@ -73,13 +73,6 @@ const useAnimateHooks = function () {
                 tomatoes.value.push(createTomatoes())
             }
             World.add(engine.value.world,tomatoes.value)
-            // timer.value = setInterval(() => {
-            //     if (!engine.value) return;
-            //     const tomato = createTomatoes();
-            //     World.add(engine.value.world, tomato);
-            //     tomatoes.value.push(tomato);
-    
-            // }, 500);
             Runner.run(runner.value, engine.value)
         }
     }

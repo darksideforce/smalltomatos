@@ -34,13 +34,18 @@ export const useDataBase = defineStore('dataBase', {
             }
         },
         loadSetting(){
-
+            window.ipcRenderer.invoke('search-setting','time').then(res=>{
+                
+                this.missionTimeSetting = res
+                console.log(`res=${this.missionTimeSetting}`)
+                // standValue.value = res
+                // SliderAnimation(res)
+            })
         },
         changeMissionTime(time:number){
-            // ipcRenderer.invoke('search-setting', 'time')
             window.ipcRenderer.invoke('set-setting', 'time',time)
-            console.log(`time=${time}`)
             this.missionTimeSetting = time
+            console.log(this.missionTimeSetting)
         },
 
     }

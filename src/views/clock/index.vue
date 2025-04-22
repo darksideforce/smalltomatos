@@ -1,9 +1,9 @@
 <template>
   <div class="clock">
     <div class="clock_font">
-      <span class="clock_font--time">60:00</span>
+      <span class="clock_font--time" @click="handleClickChangeTime">{{ formatTime }}</span>
       <div class="clock_font--detail">阅读</div>
-      <div class="clock_font--button" @click="handleclick">开始专注</div>
+      <div class="clock_font--button" @click="handleClickStart">开始专注</div>
     </div>
     <div class="clock_animate" ref="animate">
     </div>
@@ -11,29 +11,48 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import useAnimateHooks from './hooks/useAnimate';
 import useMyDialog from './hooks/useNewDialog';
+import useTimeHooks from './hooks/useTime';
+import { usedataBaseHook, useDataBase } from '@/store/modules/dataBase';
 
 const animate = ref<HTMLElement | null>(null)
-const {registerContainer,renderImg} = useAnimateHooks()
+const { missionTimeSetting, loadSetting } = usedataBaseHook()
+const { registerContainer, renderImg } = useAnimateHooks()
+const timeStopFunc = () => {
+  console.log(`外部监听到了结束`)
+}
+const { formatTime, propTime, startTimer, reset } = useTimeHooks(usedataBaseHook().missionTimeSetting, timeStopFunc)
 const { openDialog } = useMyDialog()
 const showDialog = () => {
   openDialog({
   });
 };
-const handleclick = ()=>{
+const handleClickStart = () => {
+  reset()
+  startTimer()
+}
+const handleClickChangeTime = () => {
   showDialog()
 }
-
-
-onMounted(async ()=>{
-  await nextTick()
-  setTimeout(() => {
-    
-    // renderImg()
-  },1000);
+watch(() => usedataBaseHook().missionTimeSetting, (newV, oldV) => {
+  propTime.value = newV
 })
+const timeCountdown = computed(() => {
+
+})
+
+onMounted(async () => {
+  await nextTick()
+  usedataBaseHook().loadSetting()
+})
+const renderFunc = () => {
+  if (!animate.value) return
+  registerContainer(animate.value)
+  renderImg(10)
+}
+
 </script>
 <style scoped lang='less'>
 .clock,
